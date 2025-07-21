@@ -41,7 +41,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(contact, index) in filteredContacts" :key="contact.id">
+          <tr v-for="(contact) in filteredContacts" :key="contact.id">
             <td>{{ contact.id }}</td>
             <td>{{ contact.name }}</td>
             <td>{{ contact.email }}</td>
@@ -50,10 +50,10 @@
             <td>{{ contact.country }}</td>
             <td>{{ contact.city }}</td>
             <td>
-              <button class="button is-small is-info mr-2" @click="openModal('editar', index)">
+              <button class="button is-small is-info mr-2" @click="openModal('editar', contact.id)">
                 Editar
               </button>
-              <button class="button is-small is-danger" @click="deleteContact(index)">
+              <button class="button is-small is-danger" @click="deleteContact(contact.id)">
                 Eliminar
               </button>
             </td>
@@ -304,11 +304,12 @@ export default {
     },
   },
   methods: {
-    openModal(mode, index = null) {
+    openModal(mode, id = null) {
       this.modalMode = mode;
-      if (mode === "editar" && index !== null) {
-        this.selectedIndex = index;
-        this.selectedContact = { ...this.contacts[index] };
+      if (mode === "editar" && id !== null) {
+        const contact = this.contacts.find(c => c.id === id);
+        this.selectedIndex = this.contacts.findIndex(c => c.id === id);
+        this.selectedContact = { ...contact };
       } else {
         this.selectedContact = null;
         this.selectedIndex = null;
@@ -335,8 +336,9 @@ export default {
       this.contacts.push(newContact);
       this.closeModal();
     },
-    deleteContact(index) {
-      if (confirm("¿Está seguro de eliminar este contacto?")) {
+    deleteContact(id) {
+      const index = this.contacts.findIndex(c => c.id === id);
+      if (confirm(`¿Está seguro de eliminar el contacto ${this.contacts[index].name}, id: ${id}?`)) {
         this.contacts.splice(index, 1);
       }
     },
